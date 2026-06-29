@@ -1,0 +1,33 @@
+{
+  "name": "my-genpage",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Manual code-first Generative Page for Power Apps Model-Driven Apps",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "transpile": "pac model genpage transpile --code-file page.tsx",
+    "lint": "eslint . --ext .ts,.tsx",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
+    "prepare": "npm run typecheck"
+  },
+  "devDependencies": {
+    "@types/d3": "^7.4.3",
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.3",
+    "@typescript-eslint/eslint-plugin": "^7.13.0",
+    "@typescript-eslint/parser": "^7.13.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react": "^7.34.2",
+    "prettier": "^3.3.2",
+    "typescript": "^5.5.2"
+  },
+  "dependencies": {
+    "@fluentui/react-components": "^9.54.0",
+    "@fluentui/react-datepicker-compat": "^0.4.0",
+    "@fluentui/react-timepicker-compat": "^0.2.0",
+    "d3": "^7.9.0"
+  }
+}
