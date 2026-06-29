@@ -56,15 +56,73 @@ pac model genpage download \
 
 | Command | Purpose | Example |
 |---------|---------|---------|
-| `pac model genpage list` | List all generated pages in an app | `pac model genpage list --app-id "Contoso Sales"` |
+| `pac model genpage list` | List all generated pages + get Page IDs | `pac model genpage list --app-id "Contoso Sales"` |
 | `pac model genpage generate-types` | Create `RuntimeTypes.ts` (type-safe Dataverse) | `pac model genpage generate-types --data-sources "account,contact" -o RuntimeTypes.ts` |
 | `pac model genpage download` | Download existing page source code | `pac model genpage download --app-id "Contoso" --page-id "guid-here" -o .` |
-| `pac model genpage upload` | **Deploy / Update** your page | See examples below |
-| `pac model genpage transpile` | Transpile `.tsx` → `.js` locally | `pac model genpage transpile --code-file page.tsx` |
+| `pac model genpage upload` | **Deploy / Update** your page (the "push") | See detailed section below |
+| `pac model genpage transpile` | Transpile `.tsx` → `.js` locally (usually not needed) | `pac model genpage transpile --code-file page.tsx` |
+
+### Quick Push After Changing Code (Most Common Workflow)
+
+After editing `page.tsx`:
+
+```bash
+# 1. Type check
+npm run typecheck
+
+# 2. Push / Upload directly (auto-transpiles)
+pac model genpage upload \
+  --app-id "Contoso Sales Hub" \
+  --page-id "e5f6a7b8-..." \
+  --code-file ./page.tsx \
+  --data-sources "account,contact" \
+  --prompt "Added filters and revenue chart" \
+  --agent-message "Improved layout and added interactive filters"
+```
+
+**To add a new page to the sitemap/navigation:**
+Use `--add-to-sitemap` **only when creating a new page** (omit on updates):
+
+```bash
+pac model genpage upload \
+  --app-id "Contoso Sales Hub" \
+  --code-file ./page.tsx \
+  --name "My New Page" \
+  --data-sources "account,contact" \
+  --prompt "New dashboard page" \
+  --add-to-sitemap
+```
+
+### Full `pac model genpage upload` Parameters
+
+| Parameter              | When to Use                  | Description |
+|------------------------|------------------------------|-----------|
+| `--app-id`             | Always                       | App name or GUID |
+| `--code-file`          | Always                       | Path to your edited `page.tsx` |
+| `--page-id`            | Updates only                 | Existing page GUID (get from `list`) |
+| `--name`               | New pages only               | Display name in sitemap |
+| `--data-sources`       | Pages using Dataverse        | e.g. `"account,contact"` |
+| `--prompt`             | Recommended                  | Description of the page |
+| `--agent-message`      | Recommended                  | What changed (saved in history) |
+| `--add-to-sitemap`     | New pages only               | Adds page to app navigation |
+| `--model`              | Optional                     | AI model name (for traceability) |
+| `--compiled-code-file` | Rare                         | Provide pre-transpiled JS if needed |
+| `--environment` / `-env` | Multi-org work            | Target specific environment |
 
 ### Upload Examples
 
-**Create new page:**
+**Update existing page (quick push):**
+```bash
+pac model genpage upload \
+  --app-id "Contoso Sales Hub" \
+  --page-id "e5f6a7b8-abcd-ef01-2345-000000000010" \
+  --code-file ./page.tsx \
+  --data-sources "account,contact" \
+  --prompt "Updated filters and added chart" \
+  --agent-message "Refined UI and improved performance"
+```
+
+**Create new page + add to sitemap:**
 ```bash
 pac model genpage upload \
   --app-id "Contoso Sales Hub" \
@@ -72,17 +130,8 @@ pac model genpage upload \
   --name "Account Dashboard" \
   --data-sources "account,contact" \
   --prompt "Dashboard showing top accounts with revenue chart" \
-  --add-to-sitemap
-```
-
-**Update existing page:**
-```bash
-pac model genpage upload \
-  --app-id "Contoso Sales Hub" \
-  --page-id "e5f6a7b8-..." \
-  --code-file ./page.tsx \
-  --data-sources "account,contact" \
-  --prompt "Added filters and improved chart"
+  --add-to-sitemap \
+  --agent-message "Initial version created"
 ```
 
 ## 5. Typical Development Workflow
